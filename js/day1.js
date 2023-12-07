@@ -1,12 +1,4 @@
-import { promises as fs } from "fs";
-
-async function readInputFile(filePath) {
-  try {
-    return await fs.readFile(filePath, "utf8");
-  } catch (err) {
-    console.error(err);
-  }
-}
+import { readInputFile } from "./utilities.js";
 
 const digits = new Set("0123456789");
 
