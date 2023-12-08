@@ -42,6 +42,6 @@ async function fetchAndSaveInputToFile(dayNum) {
   return text;
 }
 
-fetchAndSaveInputToFile(2);
+fetchAndSaveInputToFile(3);
 
 export { readInputFile };
