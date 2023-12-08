@@ -1,10 +1,4 @@
-import { readInputFile } from "./utilities.js";
-
-const digits = new Set("0123456789");
-
-function isDigit(str) {
-  return digits.has(str);
-}
+import { readInputFile, isDigit } from "../utilities.js";
 
 async function part1() {
   const text = await readInputFile("day1_input.txt");
@@ -97,14 +91,3 @@ async function part2() {
   const result2 = await part2();
   console.log(result2);
 })();
-
-async function fetchInputText() {
-  return (
-    await fetch("https://adventofcode.com/2023/day/1/input", {
-      headers: {
-        cookie:
-          "session=53616c7465645f5f5dbdabc712426835ec5af78c977a4f4d077beedada13410e0fb2fe8f412addc27438fb61c17323b2ec1aa5492df9b43702477cd1214c6e18",
-      },
-    })
-  ).text();
-}

@@ -1,4 +1,4 @@
-import { readInputFile } from "./utilities.js";
+import { readInputFile } from "../utilities.js";
 
 // 12 red cubes, 13 green cubes, and 14 blue cubes
 const colorToMAX = {

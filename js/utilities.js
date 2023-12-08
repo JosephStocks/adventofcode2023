@@ -25,6 +25,12 @@ async function readInputFile(filePath) {
   }
 }
 
+const isDigit = (() => {
+  const digitSet = new Set("0123456789");
+
+  return (char) => digitSet.has(char);
+})();
+
 async function fetchAndSaveInputToFile(dayNum) {
   const response = await fetch(
     `https://adventofcode.com/2023/day/${dayNum}/input`,
@@ -37,11 +43,11 @@ async function fetchAndSaveInputToFile(dayNum) {
   );
   const text = await response.text();
 
-  await fs.writeFile(`day${dayNum}_input.txt`, text, "utf8");
+  await fs.writeFile(`day${dayNum}/day${dayNum}_input.txt`, text, "utf8");
 
   return text;
 }
 
-fetchAndSaveInputToFile(3);
+fetchAndSaveInputToFile(4);
 
-export { readInputFile };
+export { readInputFile, isDigit };

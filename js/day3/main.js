@@ -1,10 +1,4 @@
-import { readInputFile } from "./utilities.js";
-
-const isDigit = (() => {
-  const digitSet = new Set("0123456789");
-
-  return (char) => digitSet.has(char);
-})();
+import { readInputFile, isDigit } from "../utilities.js";
 
 function isSymbol(char) {
   return char !== "." && !isDigit(char);
@@ -12,13 +6,7 @@ function isSymbol(char) {
 
 export function isPartNumber(rowIndex, colIndexWordStart, wordLength, grid) {
   function safeIsSymbol(row, col) {
-    return (
-      row >= 0 &&
-      row < grid.length &&
-      col >= 0 &&
-      col < grid[row].length &&
-      isSymbol(grid[row][col])
-    );
+    return isValidPosition(row, col, grid) && isSymbol(grid[row][col]);
   }
 
   for (
@@ -149,9 +137,3 @@ async function part2() {
   const result2 = await part2();
   console.log(result2);
 })();
-
-const testGrid1 = ["......", ".1234.", ".....*"];
-const testGrid2 = ["......", ".1234.", "......"];
-
-console.log(isPartNumber(1, 1, 4, testGrid1)); //true
-console.log(isPartNumber(1, 1, 4, testGrid2)); //false
