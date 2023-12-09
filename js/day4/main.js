@@ -1,13 +1,12 @@
 import { readInputFile } from "../utilities.js";
 
-async function main() {
+async function part1() {
   const text = await readInputFile("input.txt");
   const lines = text.split("\n");
   let sumOfWinningPoints = 0;
-  for (const [rowIndex, line] of lines.entries()) {
+  for (const line of lines) {
     if (line) {
-      const [card, numbers] = line.split(": ");
-      const [_, cardId] = card.split(/\s+/);
+      const [_, numbers] = line.split(": ");
       let [winningNumbers, myNumbers] = numbers.split(" | ");
       winningNumbers = new Set(winningNumbers.trim().split(/\s+/));
       myNumbers = new Set(myNumbers.trim().split(/\s+/));
@@ -21,5 +20,11 @@ async function main() {
 }
 
 (async () => {
-  const result = await main();
+  console.log("PART 1");
+  const result1 = await part1();
+  console.log(result1);
+
+  console.log("PART 2");
+  //   const result2 = await part2();
+  //   console.log(result2);
 })();
