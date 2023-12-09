@@ -33,7 +33,7 @@ export function isPartNumber(rowIndex, colIndexWordStart, wordLength, grid) {
 }
 
 async function part1() {
-  const text = await readInputFile("day3_input.txt");
+  const text = await readInputFile("input.txt");
   const lines = text.split("\n");
   let sumOfPartNumbers = 0;
   for (const [rowIndex, line] of lines.entries()) {

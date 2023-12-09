@@ -1,7 +1,7 @@
 import { readInputFile, isDigit } from "../utilities.js";
 
 async function part1() {
-  const text = await readInputFile("day1_input.txt");
+  const text = await readInputFile("input.txt");
   const lines = text.split("\n");
   let result = 0;
   for (const line of lines) {
@@ -65,7 +65,7 @@ const reverseReplacements = Object.entries(replacements).reduce(
 );
 
 async function part2() {
-  const text = await readInputFile("day1_input.txt");
+  const text = await readInputFile("input.txt");
   const lines = text.split("\n");
   let result = 0;
   for (const line of lines) {

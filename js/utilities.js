@@ -43,11 +43,9 @@ async function fetchAndSaveInputToFile(dayNum) {
   );
   const text = await response.text();
 
-  await fs.writeFile(`day${dayNum}/day${dayNum}_input.txt`, text, "utf8");
+  await fs.writeFile(`day${dayNum}/input.txt`, text, "utf8");
 
   return text;
 }
-
-fetchAndSaveInputToFile(4);
 
 export { readInputFile, isDigit };

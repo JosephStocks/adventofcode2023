@@ -20,7 +20,7 @@ function isGameValid(handfuls) {
 }
 
 async function part1() {
-  const text = await readInputFile("day2_input.txt");
+  const text = await readInputFile("input.txt");
   const lines = text.split("\n");
   let sumOfIds = 0;
   for (const line of lines) {
