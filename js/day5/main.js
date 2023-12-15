@@ -1,21 +1,138 @@
 import { readInputFile } from "../utilities.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
-function fromSourceToDestination({
-  source,
-  destinationRangeStart,
-  sourceRangeStart,
-  rangeLength,
-}) {
-  if (source < sourceRangeStart || source >= sourceRangeStart + rangeLength)
-    return source;
-  return source + (destinationRangeStart - sourceRangeStart);
+function buildFilePath(filename) {
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  return path.join(__dirname, filename);
+}
+
+function fromSourceToDestination(source, transformations) {
+  for (const {
+    destinationRangeStart,
+    sourceRangeStart,
+    rangeLength,
+  } of transformations) {
+    if (source >= sourceRangeStart && source < sourceRangeStart + rangeLength)
+      return source + (destinationRangeStart - sourceRangeStart);
+  }
+  return source;
 }
 
 async function part1() {
-  const text = await readInputFile("input.txt");
-  const lines = text.split("\n");
-  console.log(lines[0]);
-  return 0;
+  const text = await readInputFile(buildFilePath("input.txt"));
+  let sections = text
+    .split(/\n\s*\n/)
+    .filter((str) => str.trim())
+    .map((section) => section.split("\n"))
+    .map((array) => array.filter((str) => str.trim()));
+  let seeds = sections[0][0]
+    .split(/\s+/)
+    .filter((str) => str.trim())
+    .slice(1)
+    .map((str) => parseInt(str, 10));
+  let maps = sections.slice(1);
+  maps = maps.map((arr) =>
+    arr.slice(1).map((str) => str.split(/\s+/).map((str) => parseInt(str, 10)))
+  );
+  maps = maps.map((arr) =>
+    arr.map(([destinationRangeStart, sourceRangeStart, rangeLength]) => ({
+      destinationRangeStart,
+      sourceRangeStart,
+      rangeLength,
+    }))
+  );
+  let [
+    seedToSoil,
+    soilToFertilizer,
+    fertilizerToWater,
+    waterToLight,
+    lightToTemperature,
+    temperatureToHumidity,
+    humidityToLocation,
+  ] = maps;
+
+  const locations = seeds.map((seed) => {
+    const soil = fromSourceToDestination(seed, seedToSoil);
+    const fertilizer = fromSourceToDestination(soil, soilToFertilizer);
+    const water = fromSourceToDestination(fertilizer, fertilizerToWater);
+    const light = fromSourceToDestination(water, waterToLight);
+    const temperature = fromSourceToDestination(light, lightToTemperature);
+    const humidity = fromSourceToDestination(
+      temperature,
+      temperatureToHumidity
+    );
+    const location = fromSourceToDestination(humidity, humidityToLocation);
+    return location;
+  });
+
+  return Math.min(...locations);
+}
+
+async function part2() {
+  const text = await readInputFile(buildFilePath("input.txt"));
+  let sections = text
+    .split(/\n\s*\n/)
+    .filter((str) => str.trim())
+    .map((section) => section.split("\n"))
+    .map((array) => array.filter((str) => str.trim()));
+  let seeds = sections[0][0]
+    .split(/\s+/)
+    .filter((str) => str.trim())
+    .slice(1)
+    .map((str) => parseInt(str, 10));
+  let maps = sections.slice(1);
+  maps = maps.map((arr) =>
+    arr.slice(1).map((str) => str.split(/\s+/).map((str) => parseInt(str, 10)))
+  );
+  maps = maps.map((arr) =>
+    arr.map(([destinationRangeStart, sourceRangeStart, rangeLength]) => ({
+      destinationRangeStart,
+      sourceRangeStart,
+      rangeLength,
+    }))
+  );
+
+  let [
+    seedToSoil,
+    soilToFertilizer,
+    fertilizerToWater,
+    waterToLight,
+    lightToTemperature,
+    temperatureToHumidity,
+    humidityToLocation,
+  ] = maps;
+
+  function seedToLocation(seed) {
+    const soil = fromSourceToDestination(seed, seedToSoil);
+    const fertilizer = fromSourceToDestination(soil, soilToFertilizer);
+    const water = fromSourceToDestination(fertilizer, fertilizerToWater);
+    const light = fromSourceToDestination(water, waterToLight);
+    const temperature = fromSourceToDestination(light, lightToTemperature);
+    const humidity = fromSourceToDestination(
+      temperature,
+      temperatureToHumidity
+    );
+    const location = fromSourceToDestination(humidity, humidityToLocation);
+    return location;
+  }
+
+  function* numberSequence(start, length) {
+    for (let i = 0; i < length; i++) {
+      yield start + i;
+    }
+  }
+  let minLocationSoFar = Infinity;
+  for (let i = 0; i < seeds.length; i += 2) {
+    const seedStart = seeds[i];
+    const seedLength = seeds[i + 1];
+
+    for (const seed of numberSequence(seedStart, seedLength)) {
+      minLocationSoFar = Math.min(minLocationSoFar, seedToLocation(seed));
+    }
+  }
+
+  return minLocationSoFar;
 }
 
 (async () => {
@@ -23,9 +140,9 @@ async function part1() {
   const result1 = await part1();
   console.log(result1);
 
-  // console.log("PART 2");
-  // const result2 = await part2();
-  // console.log(result2);
+  console.log("PART 2");
+  const result2 = await part2();
+  console.log(result2);
 })();
 
 /*
@@ -68,34 +185,4 @@ seed-to-soil map:
 
 map:
 destination_range_start source_range_start range_length
-
-
-
-
-
 */
-
-// console.log(
-//   fromSourceToDestination({
-//     source: 49,
-//     destinationRangeStart: 52,
-//     sourceRangeStart: 50,
-//     rangeLength: 48,
-//   })
-// );
-// console.log(
-//   fromSourceToDestination({
-//     source: 52,
-//     destinationRangeStart: 52,
-//     sourceRangeStart: 50,
-//     rangeLength: 48,
-//   })
-// );
-// console.log(
-//   fromSourceToDestination({
-//     source: 50,
-//     destinationRangeStart: 52,
-//     sourceRangeStart: 50,
-//     rangeLength: 48,
-//   })
-// );
