@@ -69,65 +69,53 @@ async function part1() {
   return Math.min(...locations);
 }
 
-async function part2() {
-  const text = await readInputFile(buildFilePath("input.txt"));
-  let sections = text
-    .split(/\n\s*\n/)
-    .filter((str) => str.trim())
-    .map((section) => section.split("\n"))
-    .map((array) => array.filter((str) => str.trim()));
-  let seeds = sections[0][0]
-    .split(/\s+/)
-    .filter((str) => str.trim())
-    .slice(1)
-    .map((str) => parseInt(str, 10));
-  let maps = sections.slice(1);
-  maps = maps.map((arr) =>
-    arr.slice(1).map((str) => str.split(/\s+/).map((str) => parseInt(str, 10)))
-  );
-  maps = maps.map((arr) =>
-    arr.map(([destinationRangeStart, sourceRangeStart, rangeLength]) => ({
-      destinationRangeStart,
-      sourceRangeStart,
-      rangeLength,
-    }))
-  );
-
-  let [
-    seedToSoil,
-    soilToFertilizer,
-    fertilizerToWater,
-    waterToLight,
-    lightToTemperature,
-    temperatureToHumidity,
-    humidityToLocation,
-  ] = maps;
-
-  function seedToLocation(seed) {
-    const soil = fromSourceToDestination(seed, seedToSoil);
-    const fertilizer = fromSourceToDestination(soil, soilToFertilizer);
-    const water = fromSourceToDestination(fertilizer, fertilizerToWater);
-    const light = fromSourceToDestination(water, waterToLight);
-    const temperature = fromSourceToDestination(light, lightToTemperature);
-    const humidity = fromSourceToDestination(
-      temperature,
-      temperatureToHumidity
-    );
-    const location = fromSourceToDestination(humidity, humidityToLocation);
-    return location;
-  }
-
-  function* numberSequence(start, length) {
-    for (let i = 0; i < length; i++) {
-      yield start + i;
+function transformSource(source, transformationMap) {
+  for (const [sourceRangeStart, rangeLength, offset] of transformationMap) {
+    if (source >= sourceRangeStart && source < sourceRangeStart + rangeLength) {
+      return source + offset;
     }
   }
+  return source;
+}
+
+function parseInput(text) {
+  const sections = text
+    .split(/\n\s*\n/)
+    .map((section) =>
+      section.split("\n").map((line) => line.trim().split(/\s+/).map(Number))
+    );
+
+  const seeds = sections.shift()[0].slice(1);
+  const transformationMaps = sections.map((section) =>
+    section
+      .slice(1)
+      .map(([dstStart, srcStart, rangeLen]) => [
+        srcStart,
+        rangeLen,
+        dstStart - srcStart,
+      ])
+  );
+
+  return { seeds, transformationMaps };
+}
+
+async function part2() {
+  const text = await readInputFile(buildFilePath("input.txt"));
+  const { seeds, transformationMaps } = parseInput(text);
+
+  function seedToLocation(seed) {
+    return transformationMaps.reduce(
+      (acc, map) => transformSource(acc, map),
+      seed
+    );
+  }
+
   let minLocationSoFar = Infinity;
   for (let i = 0; i < seeds.length; i += 2) {
     const seedStart = seeds[i];
     const seedLength = seeds[i + 1];
 
-    for (const seed of numberSequence(seedStart, seedLength)) {
+    for (let seed = seedStart; seed < seedStart + seedLength; seed++) {
       minLocationSoFar = Math.min(minLocationSoFar, seedToLocation(seed));
     }
   }
